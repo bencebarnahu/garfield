@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Copy, CircleDashed, Share2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { StickerData } from "@/components/sticker-slot"
@@ -12,6 +12,11 @@ interface ListsScreenProps {
 
 export function ListsScreen({ stickers, username }: ListsScreenProps) {
   const [copied, setCopied] = useState(false)
+  const [origin, setOrigin] = useState("")
+
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
 
   function handleShare() {
     if (!username) return
@@ -34,7 +39,7 @@ export function ListsScreen({ stickers, username }: ListsScreenProps) {
       {username ? (
         <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-sm">
           <div className="flex-1 truncate rounded-xl bg-muted px-3 py-2 text-sm text-muted-foreground">
-            {typeof window !== "undefined" ? window.location.origin : ""}/{username}
+            {origin ? `${origin}/${username}` : `/${username}`}
           </div>
           <Button
             size="sm"

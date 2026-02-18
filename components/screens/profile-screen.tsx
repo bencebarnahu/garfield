@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -33,6 +33,11 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
   const [country, setCountry] = useState(profile?.country ?? "")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [origin, setOrigin] = useState("")
+
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
 
   const initials = displayName
     .split(" ")
@@ -130,7 +135,7 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
             )}
             {username && !usernameError && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Your public link: {typeof window !== "undefined" ? window.location.origin : ""}/{username}
+                Your public link: {origin ? `${origin}/${username}` : `/${username}`}
               </p>
             )}
           </div>
