@@ -12,6 +12,7 @@ import { LogOut, Save, Loader2 } from "lucide-react"
 interface ProfileData {
   id: string
   display_name: string
+  username: string | null
   avatar_url: string | null
   city: string | null
   country: string | null
@@ -26,6 +27,8 @@ interface ProfileScreenProps {
 export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
   const router = useRouter()
   const [displayName, setDisplayName] = useState(profile?.display_name ?? "")
+  const [username, setUsername] = useState(profile?.username ?? "")
+  const [usernameError, setUsernameError] = useState("")
   const [city, setCity] = useState(profile?.city ?? "")
   const [country, setCountry] = useState(profile?.country ?? "")
   const [saving, setSaving] = useState(false)
@@ -42,19 +45,30 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
     e.preventDefault()
     setSaving(true)
     setSaved(false)
+    setUsernameError("")
+
+    const cleanUsername = username.toLowerCase().replace(/[^a-z0-9_-]/g, "")
 
     const supabase = createClient()
-    await supabase
+    const { error } = await supabase
       .from("users")
       .update({
         display_name: displayName,
+        username: cleanUsername || null,
         city: city || null,
         country: country || null,
       })
       .eq("id", userId)
 
+    if (error?.code === "23505") {
+      setUsernameError("This username is already taken.")
+      setSaving(false)
+      return
+    }
+
     setSaving(false)
     setSaved(true)
+    setUsername(cleanUsername)
     router.refresh()
   }
 
@@ -91,6 +105,34 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
               className="mt-1.5 rounded-xl"
               required
             />
+          </div>
+          <div>
+            <Label htmlFor="username" className="text-sm font-medium text-foreground">
+              Username
+            </Label>
+            <div className="mt-1.5 flex items-center gap-0">
+              <span className="flex h-9 items-center rounded-l-xl border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
+                /
+              </span>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
+                  setUsernameError("")
+                }}
+                placeholder="your-username"
+                className="rounded-l-none rounded-r-xl"
+              />
+            </div>
+            {usernameError && (
+              <p className="mt-1 text-xs text-destructive">{usernameError}</p>
+            )}
+            {username && !usernameError && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your public link: {typeof window !== "undefined" ? window.location.origin : ""}/{username}
+              </p>
+            )}
           </div>
           <div>
             <Label htmlFor="city" className="text-sm font-medium text-foreground">City</Label>

@@ -38,8 +38,17 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = pathname.startsWith("/auth")
   const isCallbackRoute = pathname.startsWith("/auth/callback")
 
+  // Known protected route prefixes
+  const protectedPrefixes = ["/album", "/lists", "/search", "/profile", "/collector"]
+  const isProtectedRoute = protectedPrefixes.some((p) => pathname.startsWith(p))
+
+  // If it's not a protected route and not an auth route, it's a public route (e.g. /username)
+  if (!isProtectedRoute && !isAuthRoute) {
+    return supabaseResponse
+  }
+
   // Protected routes: redirect to login if not authenticated
-  if (!user && !isAuthRoute) {
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/auth/login"
     const redirectResponse = NextResponse.redirect(url)
