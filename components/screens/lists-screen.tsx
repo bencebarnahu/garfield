@@ -12,11 +12,13 @@ interface ListsScreenProps {
 
 export function ListsScreen({ stickers, username }: ListsScreenProps) {
   const [copied, setCopied] = useState(false)
-  const [origin, setOrigin] = useState("")
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
+    if (username) {
+      setShareUrl(`${window.location.origin}/${username}`)
+    }
+  }, [username])
 
   function handleShare() {
     if (!username) return
@@ -39,7 +41,7 @@ export function ListsScreen({ stickers, username }: ListsScreenProps) {
       {username ? (
         <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-sm">
           <div className="flex-1 truncate rounded-xl bg-muted px-3 py-2 text-sm text-muted-foreground">
-            {origin ? `${origin}/${username}` : `/${username}`}
+            {shareUrl ?? "\u00A0"}
           </div>
           <Button
             size="sm"

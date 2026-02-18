@@ -33,11 +33,15 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
   const [country, setCountry] = useState(profile?.country ?? "")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [origin, setOrigin] = useState("")
+  const [publicLink, setPublicLink] = useState<string | null>(null)
 
   useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
+    if (username) {
+      setPublicLink(`${window.location.origin}/${username}`)
+    } else {
+      setPublicLink(null)
+    }
+  }, [username])
 
   const initials = displayName
     .split(" ")
@@ -133,9 +137,9 @@ export function ProfileScreen({ profile, userId, email }: ProfileScreenProps) {
             {usernameError && (
               <p className="mt-1 text-xs text-destructive">{usernameError}</p>
             )}
-            {username && !usernameError && (
+            {publicLink && !usernameError && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Your public link: {origin ? `${origin}/${username}` : `/${username}`}
+                Your public link: {publicLink}
               </p>
             )}
           </div>
