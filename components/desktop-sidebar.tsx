@@ -3,14 +3,14 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { BookOpen, Copy, Search, User, Sticker, LogOut } from "lucide-react"
+import { BookOpen, List, Users, User, Sticker, LogOut } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 
 const tabs = [
   { href: "/album", label: "My Album", icon: BookOpen },
-  { href: "/duplicates", label: "Duplicates", icon: Copy },
-  { href: "/search", label: "Search", icon: Search },
+  { href: "/lists", label: "Lists", icon: List },
+  { href: "/search", label: "Matches", icon: Users },
   { href: "/profile", label: "Profile", icon: User },
 ]
 
